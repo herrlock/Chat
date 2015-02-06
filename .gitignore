@@ -1,3 +1,8 @@
+.settings/
 .gradle/
 build/
 bin/
+.classpath
+.project
+client.properties
+server.properties

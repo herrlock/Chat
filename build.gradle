@@ -1,5 +1,7 @@
 apply plugin: 'application'
-apply from: new File(gradle.gradleUserHomeDir, '\\central.gradle')
+apply plugin: 'eclipse'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
 
 group 'de.herrlock.javanet'
 version '1.0.0-BETA'
@@ -13,7 +15,15 @@ jar {
     }
 }
 
+eclipse {
+	natures 'org.springsource.ide.eclipse.gradle.core.nature'
+	buildCommand 'edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder'
+}
+
 dependencies {
-	compile 'de.herrlock.log:Logger:+'
 	compile 'org.glassfish:javax.json:+'
+}
+
+repositories {
+	mavenCentral()
 }

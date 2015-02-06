@@ -19,29 +19,25 @@ import javax.json.JsonWriter;
 
 import de.herrlock.chat.util.Constants;
 import de.herrlock.chat.util.Messages.Type;
-import de.herrlock.log.Logger;
 
 public class Server implements Closeable {
 
-    static final Logger log;
     private static Properties p = new Properties();
     static {
-        try (InputStream in = new FileInputStream("./server.properties")) {
-            p.load(in);
+        try ( InputStream in = new FileInputStream( "./server.properties" ) ) {
+            p.load( in );
+        } catch ( IOException ex ) {
+            throw new RuntimeException( ex );
         }
-        catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-        log = Logger.getLogger(p.getProperty("level"));
     }
 
-    private final ServerSocket s = new ServerSocket(Constants.serverPort);
+    private final ServerSocket s = new ServerSocket( Constants.serverPort );
 
-    public static void main(String... args) throws IOException {
-        try (Server server = new Server()) {
-            log.trace("Server started - " + server);
+    public static void main( String... args ) throws IOException {
+        try ( Server server = new Server() ) {
+            System.out.println( "Server started - " + server );
             server.run();
-            log.trace("Server finished - " + server);
+            System.out.println( "Server finished - " + server );
         }
     }
 
@@ -53,32 +49,30 @@ public class Server implements Closeable {
 
     public void run() {
         try {
-            while (true) {
+            while ( true ) {
                 Socket socket = this.s.accept();
-                new SocketHandler(socket).start();
+                new SocketHandler( socket ).start();
             }
-        }
-        catch (RuntimeException ex) {
+        } catch ( RuntimeException ex ) {
             ex.printStackTrace();
             throw ex;
-        }
-        catch (IOException ex) {
+        } catch ( IOException ex ) {
             ex.printStackTrace();
-            throw new RuntimeException(ex);
+            throw new RuntimeException( ex );
         }
     }
 
-    protected synchronized boolean addClient(InetAddress ip) {
-        return this.clients.add(ip);
+    protected synchronized boolean addClient( InetAddress ip ) {
+        return this.clients.add( ip );
     }
 
-    protected synchronized boolean removeClient(InetAddress ip) {
-        return this.clients.remove(ip);
+    protected synchronized boolean removeClient( InetAddress ip ) {
+        return this.clients.remove( ip );
     }
 
     @Override
     public void close() throws IOException {
-        if (!this.s.isClosed())
+        if ( !this.s.isClosed() )
             this.s.close();
     }
 
@@ -96,11 +90,11 @@ public class Server implements Closeable {
         private InetAddress client;
         private JsonObject json;
 
-        public SocketHandler(Socket socket) throws IOException {
-            super(String.valueOf(Server.this.handlerIndex++));
+        public SocketHandler( Socket socket ) throws IOException {
+            super( String.valueOf( Server.this.handlerIndex++ ) );
             this.socketFromSender = socket;
             this.client = this.socketFromSender.getInetAddress();
-            this.json = Json.createReader(this.socketFromSender.getInputStream()).readObject();
+            this.json = Json.createReader( this.socketFromSender.getInputStream() ).readObject();
         }
 
         @Override
@@ -112,15 +106,14 @@ public class Server implements Closeable {
                         .add("success", success ? Constants.RESPONSE_SUCCESS : Constants.RESPONSE_ERROR)
                         .build();
                 // @formatter:on
-                Json.createWriter(this.socketFromSender.getOutputStream()).writeObject(response);
-            }
-            catch (IOException ex) {
-                throw new RuntimeException(ex);
+                Json.createWriter( this.socketFromSender.getOutputStream() ).writeObject( response );
+            } catch ( IOException ex ) {
+                throw new RuntimeException( ex );
             }
         }
 
         private boolean processSocket() {
-            switch (Type.determineType(this.json.getString("messageType"))) {
+            switch ( Type.determineType( this.json.getString( "messageType" ) ) ) {
                 case Login:
                     return login();
                 case Logout:
@@ -133,50 +126,49 @@ public class Server implements Closeable {
         }
 
         private boolean processMessage() {
-            String from = this.json.getString("from");
-            String to = this.json.getString("to");
-            String message = this.json.getString("message");
+            String from = this.json.getString( "from" );
+            String to = this.json.getString( "to" );
+            String message = this.json.getString( "message" );
 
-            log.debug("  [" + from + " > " + to + "]");
-            log.debug("  message: " + message);
+            System.out.println( "  [" + from + " > " + to + "]" );
+            System.out.println( "  message: " + message );
 
-            try (Socket socketToReceiver = new Socket(to, Constants.clientPort)) {
-                try (JsonWriter writer = Json.createWriter(socketToReceiver.getOutputStream())) {
-                    writer.writeObject(this.json);
-                    try (JsonReader reader = Json.createReader(socketToReceiver.getInputStream())) {
-                        int success = reader.readObject().getInt("success");
-                        switch (success) {
+            try ( Socket socketToReceiver = new Socket( to, Constants.clientPort ) ) {
+                try ( JsonWriter writer = Json.createWriter( socketToReceiver.getOutputStream() ) ) {
+                    writer.writeObject( this.json );
+                    try ( JsonReader reader = Json.createReader( socketToReceiver.getInputStream() ) ) {
+                        int success = reader.readObject().getInt( "success" );
+                        switch ( success ) {
                             case Constants.RESPONSE_SUCCESS:
                                 return true;
                             case Constants.RESPONSE_ERROR:
                                 return false;
                             default:
-                                throw new RuntimeException("wrong responseCode: " + success);
+                                throw new RuntimeException( "wrong responseCode: " + success );
                         }
                     }
                 }
-            }
-            catch (IOException ex) {
-                System.err.println(ex);
+            } catch ( IOException ex ) {
+                System.err.println( ex );
                 return false;
             }
         }
 
         private boolean login() {
-            boolean success = Server.this.addClient(this.client);
-            loginoutTrace(success, "Login");
+            boolean success = Server.this.addClient( this.client );
+            loginoutTrace( success, "Login" );
             return success;
         }
 
         private boolean logout() {
-            boolean success = Server.this.removeClient(this.client);
-            loginoutTrace(success, "Logout");
+            boolean success = Server.this.removeClient( this.client );
+            loginoutTrace( success, "Logout" );
             return success;
         }
 
-        private void loginoutTrace(boolean success, String x) {
+        private void loginoutTrace( boolean success, String x ) {
             String msg = success ? "Successful {0} from {1}" : "{0} failed ( {1} )";
-            log.debug(MessageFormat.format(msg, x, this.client.getHostAddress()));
+            System.out.println( MessageFormat.format( msg, x, this.client.getHostAddress() ) );
         }
 
     }
