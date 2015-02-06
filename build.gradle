@@ -1,0 +1,19 @@
+apply plugin: 'application'
+apply from: new File(gradle.gradleUserHomeDir, '\\central.gradle')
+
+group 'de.herrlock.javanet'
+version '1.0.0-BETA'
+mainClassName = 'de.herrlock.chat.client.Client'
+
+jar {
+    baseName = project.name
+	manifest {
+        attributes 'Implementation-Title': 'Locale Area Chat',  
+        	'Implementation-Version': version
+    }
+}
+
+dependencies {
+	compile 'de.herrlock.log:Logger:+'
+	compile 'org.glassfish:javax.json:+'
+}
