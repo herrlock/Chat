@@ -91,7 +91,7 @@ public class Messages {
         public Message setContent( String content ) {
             String[] split = content.split( " ", 2 );
             String ip = split[0];
-            if ( ip.matches( "\\d{3}\\.\\d{3}\\.\\d{3}\\.\\d{3}" ) ) {
+            if ( ip.matches( "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}" ) ) {
                 this.to = ip;
             } else if ( ip.matches( "\\d{3}" ) ) {
                 this.to = "192.168.2." + ip;
