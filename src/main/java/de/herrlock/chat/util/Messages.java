@@ -1,16 +1,16 @@
 package de.herrlock.chat.util;
 
 public class Messages {
-    public static Message getMessage(Type t) {
-        switch (t) {
-            case Login:
+    public static Message getMessage( Type t ) {
+        switch ( t ) {
+            case LOGIN:
                 return new Login();
-            case Logout:
+            case LOGOUT:
                 return new Logout();
-            case Send:
+            case SEND:
                 return new Send();
             default:
-                throw new IllegalArgumentException(t.toString());
+                throw new IllegalArgumentException( t.toString() );
         }
     }
 
@@ -31,12 +31,12 @@ public class Messages {
             return this.to;
         }
 
-        public Message setFrom(String from) {
+        public Message setFrom( String from ) {
             this.from = from;
             return this;
         }
 
-        public Message setContent(@SuppressWarnings("unused") String msg) {
+        public Message setContent( @SuppressWarnings( "unused" ) String msg ) {
             throw new UnsupportedOperationException();
         }
 
@@ -47,11 +47,11 @@ public class Messages {
     }
 
     public static enum Type {
-        Login, Send, Logout;
+        LOGIN, SEND, LOGOUT;
 
-        public static Type determineType(String name) {
-            for (Type t : Type.values()) {
-                if (t.toString().equals(name)) {
+        public static Type determineType( String name ) {
+            for ( Type t : Type.values() ) {
+                if ( t.toString().equals( name ) ) {
                     return t;
                 }
             }
@@ -66,7 +66,7 @@ public class Messages {
 
         @Override
         public Type getMessageType() {
-            return Type.Login;
+            return Type.LOGIN;
         }
     }
 
@@ -77,28 +77,26 @@ public class Messages {
 
         @Override
         public Type getMessageType() {
-            return Type.Logout;
+            return Type.LOGOUT;
         }
     }
 
     static class Send extends Message {
         @Override
         public Type getMessageType() {
-            return Type.Send;
+            return Type.SEND;
         }
 
         @Override
-        public Message setContent(String content) {
-            String[] split = content.split(" ", 2);
+        public Message setContent( String content ) {
+            String[] split = content.split( " ", 2 );
             String ip = split[0];
-            if (ip.matches("\\d{3}\\.\\d{3}\\.\\d{3}\\.\\d{3}")) {
+            if ( ip.matches( "\\d{3}\\.\\d{3}\\.\\d{3}\\.\\d{3}" ) ) {
                 this.to = ip;
-            }
-            else if (ip.matches("\\d{3}")) {
+            } else if ( ip.matches( "\\d{3}" ) ) {
                 this.to = "192.168.2." + ip;
-            }
-            else {
-                throw new RuntimeException(ip);
+            } else {
+                throw new RuntimeException( ip );
             }
             this.message = split[1];
             return this;

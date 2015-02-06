@@ -31,7 +31,7 @@ public class Server implements Closeable {
         }
     }
 
-    private final ServerSocket s = new ServerSocket( Constants.serverPort );
+    private final ServerSocket s = new ServerSocket( Constants.SERVER_PORT );
 
     public static void main( String... args ) throws IOException {
         try ( Server server = new Server() ) {
@@ -114,11 +114,11 @@ public class Server implements Closeable {
 
         private boolean processSocket() {
             switch ( Type.determineType( this.json.getString( "messageType" ) ) ) {
-                case Login:
+                case LOGIN:
                     return login();
-                case Logout:
+                case LOGOUT:
                     return logout();
-                case Send:
+                case SEND:
                     return processMessage();
                 default:
                     return false;
@@ -133,7 +133,7 @@ public class Server implements Closeable {
             System.out.println( "  [" + from + " > " + to + "]" );
             System.out.println( "  message: " + message );
 
-            try ( Socket socketToReceiver = new Socket( to, Constants.clientPort ) ) {
+            try ( Socket socketToReceiver = new Socket( to, Constants.CLIENT_PORT ) ) {
                 try ( JsonWriter writer = Json.createWriter( socketToReceiver.getOutputStream() ) ) {
                     writer.writeObject( this.json );
                     try ( JsonReader reader = Json.createReader( socketToReceiver.getInputStream() ) ) {

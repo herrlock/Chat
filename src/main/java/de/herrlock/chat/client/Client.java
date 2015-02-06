@@ -60,7 +60,7 @@ public class Client {
                 String input = in.nextLine();
                 if ( input != null && !input.isEmpty() && !input.equalsIgnoreCase( "qqq" ) ) {
                     // @formatter:off
-                    Message message = Messages.getMessage(Type.Send)
+                    Message message = Messages.getMessage(Type.SEND)
                             .setFrom(LOCAL.getHostAddress())
                             .setContent(input);
                     // @formatter:on
@@ -73,7 +73,7 @@ public class Client {
     }
 
     public static void sendSocket( Message msg ) throws ConnectException {
-        try ( Socket socket = new Socket( p.getProperty( "hostname" ), Constants.serverPort ) ) {
+        try ( Socket socket = new Socket( p.getProperty( "hostname" ), Constants.SERVER_PORT ) ) {
             try ( JsonWriter writer = Json.createWriter( socket.getOutputStream() ) ) {
                 // @formatter:off
                 JsonObject sent = Json.createObjectBuilder()
@@ -113,11 +113,11 @@ public class Client {
     }
 
     private static void login() throws ConnectException {
-        sendSocket( Messages.getMessage( Type.Login ) );
+        sendSocket( Messages.getMessage( Type.LOGIN ) );
     }
 
     private static void logout() throws ConnectException {
-        sendSocket( Messages.getMessage( Type.Logout ) );
+        sendSocket( Messages.getMessage( Type.LOGOUT) );
     }
 
 }

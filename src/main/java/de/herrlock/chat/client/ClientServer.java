@@ -14,7 +14,7 @@ import de.herrlock.chat.util.Constants;
 import de.herrlock.chat.util.Messages.Type;
 
 class ClientServer extends Thread implements Closeable {
-    private final ServerSocket s = new ServerSocket(Constants.clientPort);
+    private final ServerSocket s = new ServerSocket(Constants.CLIENT_PORT);
 
     public ClientServer() throws IOException {
         super("ClientServer");
@@ -70,7 +70,7 @@ class ClientServer extends Thread implements Closeable {
         }
 
         public void run() throws IOException {
-            if (Type.determineType(this.json.getString("messageType")) == Type.Send) {
+            if (Type.determineType(this.json.getString("messageType")) == Type.SEND) {
                 ClientServer.this.printMessage(this.json);
                 // @formatter:off
                 JsonObject response = Json.createObjectBuilder()
