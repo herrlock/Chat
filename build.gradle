@@ -16,8 +16,10 @@ jar {
 }
 
 eclipse {
-	natures 'org.springsource.ide.eclipse.gradle.core.nature'
-	buildCommand 'edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder'
+	project {
+		natures 'org.springsource.ide.eclipse.gradle.core.nature'
+		buildCommand 'edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder'
+	}
 }
 
 dependencies {
