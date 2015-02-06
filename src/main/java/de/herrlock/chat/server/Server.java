@@ -1,16 +1,13 @@
 package de.herrlock.chat.server;
 
 import java.io.Closeable;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Properties;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -21,15 +18,6 @@ import de.herrlock.chat.util.Constants;
 import de.herrlock.chat.util.Messages.Type;
 
 public class Server implements Closeable {
-
-    private static Properties p = new Properties();
-    static {
-        try ( InputStream in = new FileInputStream( "./server.properties" ) ) {
-            p.load( in );
-        } catch ( IOException ex ) {
-            throw new RuntimeException( ex );
-        }
-    }
 
     private final ServerSocket s = new ServerSocket( Constants.SERVER_PORT );
 
