@@ -22,10 +22,12 @@ import de.herrlock.chat.util.Messages.Type;
 
 public class Client {
     private static final InetAddress LOCAL;
-    private static Properties p = new Properties();
+    private static final String HOSTNAME;
     static {
         try ( InputStream in = new FileInputStream( "./client.properties" ) ) {
+            Properties p = new Properties();
             p.load( in );
+            HOSTNAME = p.getProperty( "hostname" );
             LOCAL = InetAddress.getLocalHost();
         } catch ( IOException ex ) {
             throw new RuntimeException( ex );
@@ -73,7 +75,7 @@ public class Client {
     }
 
     public static void sendSocket( Message msg ) throws ConnectException {
-        try ( Socket socket = new Socket( p.getProperty( "hostname" ), Constants.SERVER_PORT ) ) {
+        try ( Socket socket = new Socket( HOSTNAME, Constants.SERVER_PORT ) ) {
             try ( JsonWriter writer = Json.createWriter( socket.getOutputStream() ) ) {
                 // @formatter:off
                 JsonObject sent = Json.createObjectBuilder()
@@ -117,7 +119,7 @@ public class Client {
     }
 
     private static void logout() throws ConnectException {
-        sendSocket( Messages.getMessage( Type.LOGOUT) );
+        sendSocket( Messages.getMessage( Type.LOGOUT ) );
     }
 
 }
